@@ -35,12 +35,13 @@ function NotFoundComponent() {
 }
 
 const ErrorComponent = lazy(async () => {
-  const ErrorBoundary = ({ error, reset }: { error: Error; reset: () => void }) => {
-    console.error(error);
-  const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
+  const ErrorBoundary = ({ error, reset }: { error: unknown; reset: () => void }) => {
+    const normalized = error instanceof Error ? error : new Error(String(error));
+    console.error(normalized);
+    const router = useRouter();
+    useEffect(() => {
+      reportLovableError(normalized, { boundary: "tanstack_root_error_component" });
+    }, [normalized]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
