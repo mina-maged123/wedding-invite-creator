@@ -7,7 +7,7 @@ import {
   HeadContent,
   Scripts,
 } from "@tanstack/react-router";
-import { useEffect, type ReactNode } from "react";
+import { lazy, useEffect, type ReactNode } from "react";
 
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/lovable-error-reporting";
@@ -34,12 +34,14 @@ function NotFoundComponent() {
   );
 }
 
-function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
-  console.error(error);
-  const router = useRouter();
-  useEffect(() => {
-    reportLovableError(error, { boundary: "tanstack_root_error_component" });
-  }, [error]);
+const ErrorComponent = lazy(async () => {
+  const ErrorBoundary = ({ error, reset }: { error: unknown; reset: () => void }) => {
+    const normalized = error instanceof Error ? error : new Error(String(error));
+    console.error(normalized);
+    const router = useRouter();
+    useEffect(() => {
+      reportLovableError(normalized, { boundary: "tanstack_root_error_component" });
+    }, [normalized]);
 
   return (
     <div className="flex min-h-screen items-center justify-center bg-background px-4">
@@ -70,7 +72,9 @@ function ErrorComponent({ error, reset }: { error: Error; reset: () => void }) {
       </div>
     </div>
   );
-}
+  };
+  return { default: ErrorBoundary };
+});
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({

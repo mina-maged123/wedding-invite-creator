@@ -27,7 +27,7 @@ export const weddingConfig = {
   countdownDate: "2026-10-11T20:00:00+03:00",
   tagline: "Together Forever",
   musicUrl: weddingSong.url,
-  musicStartAt: 30,
+  musicStartAt: 32,
   ceremony: {
     title: "The Church",
     place: "Saint George Church",
